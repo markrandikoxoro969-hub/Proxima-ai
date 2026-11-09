@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: proxima-ai
+    env: node
+    region: ohio
+    buildCommand: npm install && npm run build
+    startCommand: npx serve -s dist -l $PORT
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+    # Alternative: use Render "Static Site" instead (better fit for Vite):
+    #   buildCommand: npm run build
+    #   publishDir: dist
