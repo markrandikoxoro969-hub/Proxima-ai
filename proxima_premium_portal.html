@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PROXIMA - Premium Core AI</title>
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        black: '#000000',
+                        glass: 'rgba(255, 255, 255, 0.02)',
+                        glassBorder: 'rgba(255, 255, 255, 0.08)',
+                        accent: '#ffffff',
+                    },
+                    boxShadow: {
+                        'glow': '0 0 25px rgba(0, 0, 0, 0.08)',
+                        'glow-dark': '0 0 25px rgba(255, 255, 255, 0.08)',
+                        'glow-strong': '0 0 50px rgba(255, 255, 255, 0.15)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+
+    <style>
+        /* Core Reset & Theme Variables */
+        :root {
+            --bg-color: #f8fafc;
+            --text-color: #0f172a;
+            --scrollbar-thumb: rgba(0,0,0,0.15);
+            --scrollbar-thumb-hover: rgba(0,0,0,0.3);
+            --selection-bg: #0f172a;
+            --selection-text: #ffffff;
+        }
+        
+        html.dark {
+            --bg-color: #050505;
+            --text-color: #f8fafc;
+            --scrollbar-thumb: rgba(255,255,255,0.15);
+            --scrollbar-thumb-hover: rgba(255,255,255,0.3);
+            --selection-bg: #ffffff;
+            --selection-text: #050505;
+        }
+
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: var(--scrollbar-thumb) transparent;
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+        }
+        
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
+        ::selection { background: var(--selection-bg); color: var(--selection-text); }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow: hidden;
+            overscroll-behavior: none;
+            margin: 0; padding: 0; font-weight: 600;
+            transition: background-color 0.6s cubic-bezier(0.16, 1, 0.3, 1), color 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Glassmorphism Elements with premium spring-back transitions */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .dark .glass-panel {
+            background: rgba(10, 10, 10, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .glass-input {
+            background: rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            color: #0f172a;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .dark .glass-input {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: #f8fafc;
+        }
+        .glass-input:focus {
+            background: rgba(0, 0, 0, 0.04);
+            border-color: rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.05);
+            outline: none;
+        }
+        .dark .glass-input:focus {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.08);
+        }
+
+        .text-glow { text-shadow: 0 0 20px rgba(0,0,0,0.1); }
+        .dark .text-glow { text-shadow: 0 0 30px rgba(255,255,255,0.4); }
+        .text-glow-strong { text-shadow: 0 0 30px rgba(0,0,0,0.15); }
+        .dark .text-glow-strong { text-shadow: 0 0 40px rgba(255,255,255,0.6), 0 0 10px rgba(255,255,255,0.3); }
+        
+        /* Input Area Glow Overlay */
+        .input-glow-bg { background: linear-gradient(to right, rgba(0,0,0,0.03), rgba(0,0,0,0.01), rgba(0,0,0,0.03)); }
+        .dark .input-glow-bg { background: linear-gradient(to right, rgba(255,255,255,0.06), rgba(255,255,255,0.02), rgba(255,255,255,0.06)); }
+
+        /* Background Canvas */
+        #bg-canvas {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 0; pointer-events: none; opacity: 0.8;
+            transition: opacity 1s ease;
+        }
+        .bg-gradient-glow {
+            position: fixed; top: 50%; left: 50%; width: 70vw; height: 70vw;
+            background: radial-gradient(circle, rgba(0,0,0,0.02) 0%, rgba(255,255,255,0) 70%);
+            transform: translate(-50%, -50%); z-index: 0; pointer-events: none;
+            transition: background 1s ease;
+        }
+        .dark .bg-gradient-glow {
+            background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0) 70%);
+        }
+
+        /* Modern, Fluid, Layer-Friendly Animations */
+        .fade-in { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .fade-out { animation: fadeOut 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .slide-up { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .scale-in { animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+        
+        .typing-dot {
+            animation: typingDot 1.4s infinite ease-in-out both;
+            display: inline-block; width: 6px; height: 6px;
+            background-color: var(--text-color); border-radius: 50%; margin: 0 2px;
+        }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typingDot {
+            0%, 80%, 100% { transform: scale(0.4); opacity: 0.3; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Markdown Styles & Overflow Fixes */
+        .prose { 
+            font-weight: 500; line-height: 1.7; 
+            word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; 
+            color: var(--text-color); 
+            max-width: 100%;
+        }
+        .prose p { margin-bottom: 1em; }
+        .prose p:last-child { margin-bottom: 0; }
+        .prose strong { font-weight: 800; color: var(--text-color); }
+        .prose h1, .prose h2, .prose h3 { font-weight: 800; margin-top: 1.4em; margin-bottom: 0.4em; }
+        .prose ul, .prose ol { padding-left: 1.4em; margin-bottom: 1em; }
+        .prose li { margin-bottom: 0.4em; }
+        .prose ul { list-style-type: disc; }
+        .prose a { color: #3b82f6; text-decoration: underline; font-weight: 700; transition: color 0.2s; }
+        .dark .prose a { color: #94a3b8; }
+        .prose a:hover { color: #2563eb; }
+        .dark .prose a:hover { color: #fff; }
+        
+        .code-window {
+            background: #f1f5f9; border: 1px solid rgba(0,0,0,0.06);
+            border-radius: 14px; overflow: hidden; margin: 1.2em 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            max-width: 100%; min-width: 0; overflow-x: auto;
+        }
+        .dark .code-window {
+            background: #09090b; border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 4px 30px rgba(0,0,0,0.4);
+        }
+        .code-header {
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(0,0,0,0.03); padding: 10px 18px; border-bottom: 1px solid rgba(0,0,0,0.04);
+            font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 700; color: #475569;
+        }
+        .dark .code-header {
+            background: rgba(255,255,255,0.01); border-bottom: 1px solid rgba(255,255,255,0.03); color: #94a3b8;
+        }
+        .mac-dots { display: flex; gap: 6px; }
+        .mac-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .mac-dot.r { background: #ef4444; } .mac-dot.y { background: #f59e0b; } .mac-dot.g { background: #10b981; }
+        .prose pre { margin: 0; padding: 16px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.85rem; max-width: 100%; }
+        .prose code { background: rgba(0,0,0,0.04); padding: 3px 6px; border-radius: 5px; font-family: 'JetBrains Mono', monospace; font-size: 0.85em; font-weight: 700;}
+        .dark .prose code { background: rgba(255,255,255,0.06); }
+        .prose pre code { background: transparent; padding: 0; color: inherit; }
+        .dark .prose pre code { color: #e4e4e7; }
+
+        #chat-input { resize: none; min-height: 56px; max-height: 200px; }
+        
+        /* Premium Sidebar Fluid Mechanics */
+        .sidebar-open #sidebar { transform: translateX(0) !important; }
+        .sidebar-open #main-content { transform: translateX(300px); }
+        
+        @media (min-width: 1024px) {
+            #main-content { 
+                width: calc(100% - 320px) !important; 
+                margin-left: 320px !important; 
+                transform: none !important; 
+            }
+            .sidebar-open #main-content { transform: none !important; }
+        }
+
+        /* Smooth slide-in for alerts / toasts */
+        .toast-enter { animation: toastEnter 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes toastEnter { from { opacity: 0; transform: translateY(15px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        
+        /* Adaptive TV / Ultrawide / Desktop optimizations */
+        @media (min-width: 1920px) {
+            .max-w-4xl { max-w-5xl !important; }
+            .max-w-3xl { max-w-4xl !important; }
+            body { font-size: 1.05rem; }
+        }
+        
+    </style>
+</head>
+<body class="antialiased selection:bg-slate-900 selection:text-white dark:selection:bg-white dark:selection:text-black">
+
+    <canvas id="bg-canvas"></canvas>
+    <div class="bg-gradient-glow"></div>
+
+    <!-- Onboarding Panel with modern step-flow transitions -->
+    <div id="onboarding" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-50 dark:bg-black transition-opacity duration-1000">
+        
+        <div id="scene-logo" class="flex flex-col items-center justify-center absolute inset-0">
+            <div class="relative w-32 h-32 flex items-center justify-center mb-6">
+                <div class="absolute inset-0 rounded-full border border-black/10 dark:border-white/10 animate-[spin_6s_linear_infinite]"></div>
+                <div class="absolute inset-2 rounded-full border border-t-black dark:border-t-white border-transparent animate-[spin_3s_linear_infinite_reverse]"></div>
+                <i class="ph-fill ph-planet text-5xl text-gray-900 dark:text-white text-glow-strong animate-pulse"></i>
+            </div>
+            <div class="h-8">
+                <span id="logo-typing" class="font-extrabold text-2xl tracking-[0.3em] text-glow"></span><span class="animate-pulse">_</span>
+            </div>
+        </div>
+
+        <div id="scene-welcome" class="hidden flex-col items-center justify-center w-full max-w-md px-6 absolute inset-0">
+            <h1 class="text-5xl md:text-6xl font-black mb-2 text-center text-glow-strong uppercase tracking-tighter">PROXIMA</h1>
+            <p class="text-slate-400 dark:text-white/30 font-bold mb-12 tracking-widest uppercase text-[10px]">V2.81 Core API BY SUJAN SHRESTHA</p>
+            
+            <div id="step-name" class="w-full flex flex-col slide-up">
+                <label class="text-lg font-bold mb-4 text-center text-slate-600 dark:text-slate-300">What should we call you?</label>
+                <input type="text" id="input-name" class="glass-input w-full p-4 rounded-2xl text-center text-xl font-bold mb-6 placeholder:text-gray-400 dark:placeholder:text-white/10" placeholder="ENTER NAME" autocomplete="off" maxlength="20">
+                <button id="btn-name" class="w-full bg-slate-900 text-white dark:bg-white dark:text-black font-extrabold py-4 rounded-2xl hover:scale-[1.01] active:scale-95 transition-all shadow-glow">CONTINUE</button>
+            </div>
+
+            <div id="step-age" class="w-full hidden flex-col slide-up">
+                <label class="text-lg font-bold mb-4 text-center text-slate-600 dark:text-slate-300">How old are you?</label>
+                <input type="number" id="input-age" class="glass-input w-full p-4 rounded-2xl text-center text-xl font-bold mb-6 placeholder:text-gray-400 dark:placeholder:text-white/10" placeholder="ENTER AGE" min="1" max="120">
+                <button id="btn-age" class="w-full bg-slate-900 text-white dark:bg-white dark:text-black font-extrabold py-4 rounded-2xl hover:scale-[1.01] active:scale-95 transition-all shadow-glow">INITIALIZE</button>
+            </div>
+        </div>
+
+        <div id="scene-loading" class="hidden flex-col items-center justify-center absolute inset-0">
+            <div class="w-12 h-12 border-2 border-black/5 border-t-black dark:border-white/5 dark:border-t-white rounded-full animate-spin mb-8"></div>
+            <div id="loading-text" class="text-sm font-bold tracking-widest uppercase text-glow text-slate-500 dark:text-white/70">Preparing Proxima...</div>
+            <div class="w-60 h-[3px] bg-black/5 dark:bg-white/5 rounded-full mt-6 overflow-hidden">
+                <div id="loading-bar" class="h-full bg-slate-900 dark:bg-white w-0 transition-all duration-[3000ms] ease-out"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core App Layer -->
+    <div id="app" class="relative z-10 w-full h-[100dvh] hidden flex overflow-hidden">
+        
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 w-[300px] lg:w-[320px] glass-panel border-r-0 border-black/5 dark:border-white/5 flex flex-col z-40 transform -translate-x-full lg:translate-x-0 transition-transform duration-500 ease-in-out">
+            <div class="p-6 pb-4 flex items-center justify-between border-b border-black/5 dark:border-white/5">
+                <div class="flex items-center gap-3">
+                    <i class="ph-fill ph-planet text-2xl text-gray-900 dark:text-white"></i>
+                    <span class="font-extrabold text-lg tracking-wider">Proxima</span>
+                </div>
+                <button id="close-sidebar-btn" class="lg:hidden p-2 text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition-colors">
+                    <i class="ph-bold ph-x text-lg"></i>
+                </button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-2 relative">
+                <button id="new-chat-btn" class="w-full flex items-center justify-center gap-2 bg-slate-900/5 dark:bg-white/5 hover:bg-slate-900/10 dark:hover:bg-white/10 font-bold py-3.5 rounded-xl transition-all border border-black/5 dark:border-white/5 mb-4 shadow-sm hover:shadow-md">
+                    <i class="ph-bold ph-plus text-lg"></i> NEW CHAT
+                </button>
+
+                <div class="text-[10px] font-extrabold text-slate-400 dark:text-white/20 uppercase tracking-widest px-2 mb-1">Recent Sessions</div>
+                <div id="chat-history-list" class="flex flex-col gap-1.5 max-h-[45vh] overflow-y-auto pr-1">
+                    <!-- Session channels render here dynamically -->
+                </div>
+            </div>
+            
+            <div class="p-4 border-t border-black/5 dark:border-white/5 flex flex-col gap-1.5">
+                <div class="flex justify-between items-center px-2 mb-2 text-[10px] font-extrabold text-slate-400 dark:text-white/30">
+                    <span>MESSAGES: <span id="stat-msgs" class="text-slate-900 dark:text-white">0</span></span>
+                    <span class="flex items-center gap-1"><div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div> ENGINE ONLINE</span>
+                </div>
+                
+                <a href="https://m.facebook.com/profile.php?id=61583876866265&name=xhp_nt__fb__action__open_user&locale=en_US" target="_blank" rel="noopener noreferrer" class="w-full flex items-center gap-3 p-3 text-blue-600 dark:text-blue-400 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition-colors font-bold text-sm">
+                    <i class="ph-fill ph-facebook-logo text-lg"></i> DEV FACEBOOK
+                </a>
+                
+                <button id="settings-btn" class="w-full flex items-center gap-3 p-3 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition-colors font-bold text-sm">
+                    <i class="ph-bold ph-gear text-lg"></i> SETTINGS
+                </button>
+                
+                <div class="flex items-center justify-between p-3 bg-slate-900/5 dark:bg-white/5 rounded-xl border border-black/5 dark:border-white/5 mt-2">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-slate-300 to-slate-500 dark:from-zinc-700 dark:to-zinc-500 flex items-center justify-center font-extrabold text-sm text-white shadow-glow">
+                            <span id="user-avatar-initial">U</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span id="sidebar-user-name" class="font-bold text-xs">USER</span>
+                            <span class="text-[10px] font-bold text-slate-400 dark:text-white/30">Premium Access</span>
+                        </div>
+                    </div>
+                    <!-- Quick Theme Switcher -->
+                    <button id="quick-theme-toggle" class="p-2 text-slate-400 hover:text-slate-950 dark:hover:text-white rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors" title="Toggle Theme">
+                        <i id="quick-theme-icon" class="ph-bold ph-moon text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main id="main-content" class="flex-1 flex flex-col w-full h-[100dvh] transition-all duration-500 ease-in-out relative z-30">
+            
+            <header class="h-16 lg:h-20 flex items-center justify-between px-4 lg:px-8 bg-gradient-to-b from-slate-50/90 dark:from-black/80 to-transparent backdrop-blur-md absolute top-0 w-full z-20">
+                <div class="flex items-center gap-4">
+                    <button id="open-sidebar-btn" class="lg:hidden p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-xl bg-slate-900/5 dark:bg-white/5 border border-black/5 dark:border-white/5 backdrop-blur-md transition-colors">
+                        <i class="ph-bold ph-list text-lg"></i>
+                    </button>
+                    <div class="flex flex-col">
+                        <span class="font-extrabold text-base tracking-wide flex items-center gap-1.5">Proxima <i class="ph-fill ph-sparkle text-blue-500 dark:text-white text-glow text-xs"></i></span>
+                        <span class="text-[9px] font-extrabold text-slate-400 dark:text-white/30 uppercase tracking-widest hidden sm:block">V2.81 CORE // <span id="latency-display">42ms</span></span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="export-btn" class="p-2 lg:px-4 lg:py-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-slate-900/5 hover:bg-slate-900/10 dark:bg-white/5 dark:hover:bg-white/10 border border-black/5 dark:border-white/5 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 backdrop-blur-md">
+                        <i class="ph-bold ph-download-simple text-sm"></i> <span class="hidden lg:inline">EXPORT</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Message Stream Area -->
+            <div id="chat-container" class="flex-1 overflow-y-auto px-4 lg:px-8 pt-24 pb-32 flex flex-col gap-6 scroll-smooth">
+                <div id="empty-state" class="m-auto flex flex-col items-center justify-center text-center scale-in max-w-lg">
+                    <div class="w-20 h-20 rounded-full bg-slate-900/5 dark:bg-white/5 border border-black/5 dark:border-white/5 flex items-center justify-center mb-6 shadow-glow">
+                        <i class="ph-fill ph-planet text-4xl text-slate-800 dark:text-white"></i>
+                    </div>
+                    <h2 class="text-2xl font-black mb-3 text-glow">HOW CAN I HELP?</h2>
+                    <p class="text-slate-400 dark:text-white/40 font-bold mb-8 text-sm leading-relaxed">Proxima V2.81 is ready. Ask anything, formulate algorithms, or brainstorm creative design logic.</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
+                        <button class="prompt-btn glass-panel p-4 rounded-xl text-left hover:bg-slate-900/5 dark:hover:bg-white/5 transition-all group border border-black/5 dark:border-white/5">
+                            <i class="ph-bold ph-code text-xl mb-2 text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors"></i>
+                            <div class="font-bold text-xs text-slate-800 dark:text-white">Write a clean Python script</div>
+                        </button>
+                        <button class="prompt-btn glass-panel p-4 rounded-xl text-left hover:bg-slate-900/5 dark:hover:bg-white/5 transition-all group border border-black/5 dark:border-white/5">
+                            <i class="ph-bold ph-brain text-xl mb-2 text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors"></i>
+                            <div class="font-bold text-xs text-slate-800 dark:text-white">Explain Quantum Physics simply</div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lower Command Area -->
+            <div class="absolute bottom-0 w-full p-4 lg:p-8 bg-gradient-to-t from-slate-100 via-slate-100/95 dark:from-black dark:via-black/95 to-transparent z-20">
+                <div class="max-w-4xl mx-auto relative group">
+                    <div class="input-glow-bg absolute -inset-0.5 rounded-2xl blur opacity-25 group-focus-within:opacity-100 group-focus-within:duration-300 transition duration-1000"></div>
+                    <div class="relative glass-panel rounded-2xl flex flex-col p-2 border border-black/15 dark:border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.02)] dark:shadow-[0_0_40px_rgba(0,0,0,0.6)] focus-within:border-black/25 dark:focus-within:border-white/20 transition-all duration-300 bg-white/70 dark:bg-black/70">
+                        
+                        <div class="flex items-end gap-2 p-1">
+                            <button id="attach-btn" class="p-3 text-slate-400 hover:text-slate-900 dark:text-white/40 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-all self-end shrink-0" title="Attach File">
+                                <i class="ph-bold ph-paperclip text-lg"></i>
+                                <input type="file" id="file-upload" class="hidden">
+                            </button>
+                            
+                            <textarea id="chat-input" rows="1" class="w-full bg-transparent font-bold text-[14px] lg:text-[15px] placeholder:text-slate-400 dark:placeholder:text-white/20 border-none outline-none py-3 px-2 resize-none max-h-[160px] overflow-y-auto leading-relaxed" placeholder="Message Proxima... (Shift+Enter for new line)"></textarea>
+                            
+                            <button id="voice-btn" class="p-3 text-slate-400 hover:text-slate-900 dark:text-white/40 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-all self-end shrink-0" title="Voice Input">
+                                <i class="ph-bold ph-microphone text-lg"></i>
+                            </button>
+                            
+                            <button id="send-btn" class="p-3 ml-1 bg-slate-900 text-white dark:bg-white dark:text-black hover:bg-slate-800 dark:hover:bg-slate-100 rounded-xl font-bold transition-all self-end shrink-0 flex items-center justify-center w-11 h-11 shadow-md disabled:opacity-40 disabled:cursor-not-allowed">
+                                <i class="ph-bold ph-paper-plane-right text-lg"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="flex justify-between items-center px-3 pb-1 pt-2 border-t border-black/5 dark:border-white/5 mt-1">
+                            <span class="text-[8px] font-extrabold text-slate-400 dark:text-white/20 uppercase tracking-widest"><i class="ph-bold ph-lock-key"></i> SECURE CONTEXT ENGINE ACTIVE</span>
+                            <span id="char-counter" class="text-[8px] font-extrabold text-slate-400 dark:text-white/20">0 / 4000</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Settings Backdrop Panel -->
+    <div id="settings-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 dark:bg-black/75 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div class="glass-panel w-full max-w-md rounded-2xl border border-black/5 dark:border-white/10 p-6 lg:p-8 transform scale-95 transition-transform duration-300 relative shadow-2xl bg-white dark:bg-black">
+            <button id="close-settings" class="absolute top-5 right-5 text-slate-400 hover:text-slate-950 dark:hover:text-white transition-colors"><i class="ph-bold ph-x text-xl"></i></button>
+            <h2 class="text-2xl font-black mb-6 flex items-center gap-2"><i class="ph-bold ph-gear"></i> SETTINGS</h2>
+            
+            <div class="space-y-5">
+                <div>
+                    <label class="text-[9px] font-extrabold text-slate-400 dark:text-white/30 uppercase tracking-widest block mb-1.5">Identity</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="set-name" class="glass-input w-2/3 p-3 rounded-xl font-bold text-xs" placeholder="Name">
+                        <input type="number" id="set-age" class="glass-input w-1/3 p-3 rounded-xl font-bold text-xs" placeholder="Age">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="text-[9px] font-extrabold text-slate-400 dark:text-white/30 uppercase tracking-widest block mb-1.5">Preferences</label>
+                    
+                    <label class="flex items-center justify-between p-3 glass-input rounded-xl cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors mb-2">
+                        <span class="font-bold text-xs">Dark Theme</span>
+                        <input type="checkbox" id="toggle-theme" checked class="w-4.5 h-4.5 accent-slate-900 dark:accent-white">
+                    </label>
+
+                    <label class="flex items-center justify-between p-3 glass-input rounded-xl cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                        <span class="font-bold text-xs">Enable Particle Animations</span>
+                        <input type="checkbox" id="toggle-anim" checked class="w-4.5 h-4.5 accent-slate-900 dark:accent-white">
+                    </label>
+                </div>
+
+                <div class="pt-4 border-t border-black/5 dark:border-white/5">
+                    <button id="clear-history-btn" class="w-full bg-red-500/10 hover:bg-red-500/20 dark:bg-red-500/20 dark:hover:bg-red-500/30 text-red-600 dark:text-red-400 border border-red-500/10 font-bold text-xs py-3 rounded-xl transition-colors">
+                        CLEAR CHAT LOGS
+                    </button>
+                </div>
+            </div>
+            
+            <button id="save-settings" class="w-full mt-6 bg-slate-900 text-white dark:bg-white dark:text-black font-extrabold py-3.5 rounded-xl hover:scale-[1.01] active:scale-95 transition-transform shadow-md">SAVE CONFIG</button>
+        </div>
+    </div>
+
+    <div id="toast-container" class="fixed top-20 right-4 lg:right-8 z-[110] flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        // ==========================================
+        // 1. CONFIG & STATE
+        // ==========================================
+        const API_BASE = "https://sujancoreapi.onrender.com/chat";
+        const SYSTEM_VERSION = "V2.81 CORE";
+        
+        const STATE = {
+            user: { name: '', age: '' },
+            settings: { animations: true, theme: 'dark' },
+            sessions: {},         
+            currentSessionId: null
+        };
+
+        const DOM = {
+            app: document.getElementById('app'),
+            onboarding: document.getElementById('onboarding'),
+            sceneLogo: document.getElementById('scene-logo'),
+            sceneWelcome: document.getElementById('scene-welcome'),
+            sceneLoading: document.getElementById('scene-loading'),
+            chatContainer: document.getElementById('chat-container'),
+            chatInput: document.getElementById('chat-input'),
+            sendBtn: document.getElementById('send-btn'),
+            emptyState: document.getElementById('empty-state'),
+            charCounter: document.getElementById('char-counter'),
+            sidebar: document.getElementById('sidebar'),
+            mainContent: document.getElementById('main-content'),
+            statMsgs: document.getElementById('stat-msgs'),
+            sidebarUserName: document.getElementById('sidebar-user-name'),
+            userAvatarInitial: document.getElementById('user-avatar-initial'),
+            toastContainer: document.getElementById('toast-container'),
+            latencyDisplay: document.getElementById('latency-display'),
+            chatHistoryList: document.getElementById('chat-history-list')
+        };
+
+        // ==========================================
+        // 2. INITIALIZATION & STORAGE
+        // ==========================================
+        function init() {
+            loadState();
+            applyTheme(STATE.settings.theme);
+            setupBackgroundCanvas();
+            setupMarked();
+            
+            if (STATE.user.name && STATE.user.age) {
+                DOM.onboarding.style.display = 'none';
+                DOM.app.classList.remove('hidden');
+                
+                if (Object.keys(STATE.sessions).length === 0) {
+                    createNewSession();
+                } else if (!STATE.currentSessionId || !STATE.sessions[STATE.currentSessionId]) {
+                    STATE.currentSessionId = Object.keys(STATE.sessions)[0];
+                }
+                
+                updateUIWithState();
+                renderHistory();
+            } else {
+                startOnboardingSequence();
+            }
+            bindEvents();
+        }
+
+        function loadState() {
+            try {
+                const stored = localStorage.getItem('proxima_state_v3');
+                if (stored) {
+                    Object.assign(STATE, JSON.parse(stored));
+                } else {
+                    const oldStored = localStorage.getItem('proxima_state_v2') || localStorage.getItem('proxima_state');
+                    if (oldStored) {
+                        const oldObj = JSON.parse(oldStored);
+                        STATE.user = oldObj.user || STATE.user;
+                        STATE.settings = oldObj.settings || STATE.settings;
+                        if (oldObj.sessions) STATE.sessions = oldObj.sessions;
+                        if (oldObj.currentSessionId) STATE.currentSessionId = oldObj.currentSessionId;
+                    }
+                }
+                if(!STATE.settings.theme) STATE.settings.theme = 'dark';
+            } catch (e) { console.error("Storage load error", e); }
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem('proxima_state_v3', JSON.stringify(STATE));
+                updateUIWithState();
+            } catch (e) { console.error("Storage write error", e); }
+        }
+
+        function applyTheme(theme) {
+            const html = document.documentElement;
+            if (theme === 'dark') {
+                html.classList.add('dark');
+            } else {
+                html.classList.remove('dark');
+            }
+            STATE.settings.theme = theme;
+            const icon = document.getElementById('quick-theme-icon');
+            if(icon) {
+                icon.className = theme === 'dark' ? 'ph-bold ph-sun text-lg' : 'ph-bold ph-moon text-lg';
+            }
+        }
+
+        function toggleTheme() {
+            const newTheme = STATE.settings.theme === 'dark' ? 'light' : 'dark';
+            applyTheme(newTheme);
+            saveState();
+        }
+
+        function updateUIWithState() {
+            const currentSession = STATE.sessions[STATE.currentSessionId];
+            const msgCount = currentSession ? currentSession.history.filter(m => m.role === 'user').length : 0;
+            DOM.statMsgs.textContent = msgCount;
+
+            if(STATE.user.name) {
+                DOM.sidebarUserName.textContent = STATE.user.name.toUpperCase();
+                DOM.userAvatarInitial.textContent = STATE.user.name.charAt(0).toUpperCase();
+            }
+            renderSidebarSessions();
+        }
+
+        // ==========================================
+        // 3. SESSION MANAGEMENT
+        // ==========================================
+        function createNewSession() {
+            const newId = 'session_' + Date.now();
+            STATE.sessions[newId] = { id: newId, title: "New Chat Session", history: [] };
+            STATE.currentSessionId = newId;
+            saveState();
+            return newId;
+        }
+
+        function switchSession(sessionId) {
+            if (!STATE.sessions[sessionId]) return;
+            STATE.currentSessionId = sessionId;
+            saveState();
+            renderHistory();
+            if(window.innerWidth < 1024) DOM.sidebar.parentElement.classList.remove('sidebar-open');
+            showToast("Switched active session", "success");
+        }
+
+        function deleteSession(sessionId, event) {
+            if (event) event.stopPropagation();
+            if (Object.keys(STATE.sessions).length <= 1) {
+                showToast("Cannot delete the only remaining session.", "error");
+                return;
+            }
+            delete STATE.sessions[sessionId];
+            if (STATE.currentSessionId === sessionId) {
+                STATE.currentSessionId = Object.keys(STATE.sessions)[0];
+            }
+            saveState();
+            renderHistory();
+            showToast("Session deleted", "info");
+        }
+
+        function renderSidebarSessions() {
+            DOM.chatHistoryList.innerHTML = '';
+            Object.values(STATE.sessions).forEach(session => {
+                const isActive = session.id === STATE.currentSessionId;
+                
+                const wrapper = document.createElement('div');
+                wrapper.className = `w-full flex items-center justify-between group rounded-xl p-2.5 transition-all text-left ${
+                    isActive ? 'bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10' : 'hover:bg-black/5 dark:hover:bg-white/5 border border-transparent'
+                }`;
+                wrapper.style.cursor = 'pointer';
+                wrapper.onclick = () => switchSession(session.id);
+
+                const infoDiv = document.createElement('div');
+                infoDiv.className = "flex items-center gap-2 overflow-hidden w-[80%]";
+                infoDiv.innerHTML = `
+                    <i class="ph-bold ph-chat-circle ${isActive ? 'text-gray-900 dark:text-white' : 'text-slate-400 dark:text-white/30'} text-sm shrink-0"></i>
+                    <span class="font-bold text-xs truncate ${isActive ? 'text-gray-900 dark:text-white' : 'text-slate-500 dark:text-white/50 group-hover:text-gray-900 dark:group-hover:text-white'}">${session.title}</span>
+                `;
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = "text-slate-400 hover:text-red-500 dark:text-white/20 dark:hover:text-red-400 p-1 rounded transition-colors";
+                deleteBtn.innerHTML = '<i class="ph-bold ph-trash text-xs"></i>';
+                deleteBtn.onclick = (e) => deleteSession(session.id, e);
+
+                wrapper.appendChild(infoDiv);
+                wrapper.appendChild(deleteBtn);
+                DOM.chatHistoryList.appendChild(wrapper);
+            });
+        }
+
+        // ==========================================
+        // 4. ONBOARDING MECHANICS
+        // ==========================================
+        function startOnboardingSequence() {
+            const logoText = "Proxima";
+            let i = 0;
+            const typingInterval = setInterval(() => {
+                document.getElementById('logo-typing').textContent += logoText.charAt(i);
+                i++;
+                if (i >= logoText.length) {
+                    clearInterval(typingInterval);
+                    setTimeout(() => {
+                        DOM.sceneLogo.classList.add('fade-out');
+                        setTimeout(() => {
+                            DOM.sceneLogo.style.display = 'none';
+                            DOM.sceneWelcome.classList.remove('hidden');
+                            DOM.sceneWelcome.classList.add('flex', 'fade-in');
+                        }, 500);
+                    }, 800);
+                }
+            }, 90);
+
+            const inputName = document.getElementById('input-name');
+            const btnName = document.getElementById('btn-name');
+            const stepName = document.getElementById('step-name');
+            const stepAge = document.getElementById('step-age');
+            const inputAge = document.getElementById('input-age');
+            const btnAge = document.getElementById('btn-age');
+
+            btnName.onclick = () => {
+                if(!inputName.value.trim()) return showToast("Please enter your name", "error");
+                STATE.user.name = inputName.value.trim();
+                stepName.classList.add('fade-out');
+                setTimeout(() => {
+                    stepName.style.display = 'none';
+                    stepAge.classList.remove('hidden');
+                    stepAge.classList.add('flex', 'fade-in');
+                    inputAge.focus();
+                }, 400);
+            };
+
+            btnAge.onclick = () => {
+                if(!inputAge.value.trim() || inputAge.value < 1) return showToast("Please enter a valid age", "error");
+                STATE.user.age = inputAge.value.trim();
+                createNewSession();
+                saveState();
+                
+                DOM.sceneWelcome.classList.add('fade-out');
+                setTimeout(() => {
+                    DOM.sceneWelcome.style.display = 'none';
+                    startLoadingSequence();
+                }, 500);
+            };
+            
+            inputName.addEventListener('keypress', e => { if(e.key === 'Enter') btnName.click(); });
+            inputAge.addEventListener('keypress', e => { if(e.key === 'Enter') btnAge.click(); });
+        }
+
+        function startLoadingSequence() {
+            DOM.sceneLoading.classList.remove('hidden');
+            DOM.sceneLoading.classList.add('flex', 'fade-in');
+            
+            const texts = ["Syncing Core System...", "Initializing Brain...", "Securing Data Gateways...", "System Ready."];
+            const textEl = document.getElementById('loading-text');
+            const bar = document.getElementById('loading-bar');
+            
+            setTimeout(() => bar.style.width = '100%', 100);
+            
+            let i = 0;
+            const textInt = setInterval(() => {
+                if(i < texts.length) { textEl.textContent = texts[i]; i++; }
+            }, 700);
+
+            setTimeout(() => {
+                clearInterval(textInt);
+                DOM.onboarding.style.opacity = '0';
+                setTimeout(() => {
+                    DOM.onboarding.style.display = 'none';
+                    DOM.app.classList.remove('hidden');
+                    DOM.app.classList.add('fade-in');
+                    updateUIWithState();
+                    renderHistory();
+                }, 1000);
+            }, 3000);
+        }
+
+        // ==========================================
+        // 5. CANVAS BACKGROUND PARTICLES
+        // ==========================================
+        function setupBackgroundCanvas() {
+            const canvas = document.getElementById('bg-canvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 1.5;
+                    this.speedX = (Math.random() - 0.5) * 0.15;
+                    this.speedY = (Math.random() - 0.5) * 0.15;
+                    this.opacity = Math.random() * 0.4 + 0.1;
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    if(this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                    if(this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    const isDark = document.documentElement.classList.contains('dark');
+                    ctx.fillStyle = isDark ? `rgba(255, 255, 255, ${this.opacity})` : `rgba(0, 0, 0, ${this.opacity})`;
+                    ctx.fill();
+                }
+            }
+
+            for(let i=0; i<60; i++) particles.push(new Particle());
+
+            function animate() {
+                if(STATE.settings.animations === false) {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    return;
+                }
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => { p.update(); p.draw(); });
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        // ==========================================
+        // 6. CODE PRETTIFIER & SYSTEM ENGINE
+        // ==========================================
+        function setupMarked() {
+            const renderer = new marked.Renderer();
+            renderer.code = function(code, language) {
+                const validLang = Prism.languages[language] ? language : 'javascript';
+                const highlighted = Prism.highlight(code, Prism.languages[validLang], validLang);
+                return `
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="mac-dots">
+                            <div class="mac-dot r"></div><div class="mac-dot y"></div><div class="mac-dot g"></div>
+                        </div>
+                        <span class="uppercase tracking-widest">${validLang}</span>
+                        <button class="copy-code-btn hover:text-slate-900 dark:hover:text-white transition-colors flex items-center gap-1" data-code="${escapeHTML(code)}">
+                            <i class="ph-bold ph-copy"></i> COPY
+                        </button>
+                    </div>
+                    <pre class="language-${validLang}"><code class="language-${validLang}">${highlighted}</code></pre>
+                </div>`;
+            };
+            marked.setOptions({ renderer: renderer, gfm: true, breaks: true });
+        }
+        
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag]));
+        }
+
+        // ==========================================
+        // 7. CORE CONTEXT CONROLLER
+        // ==========================================
+        function getPersonalityOverride(msg) {
+            const low = msg.toLowerCase().trim();
+            if (/\b(who|what|developers?|creators?|owners?|masters?|bosses?|developed|created|made|programmed|wrote|built|support|designer|architect)\b.*\b(you|your|your identity|proxima|app|bot|ai)\b/i.test(low) || /\b(who is (sujan|aayusha))\b/i.test(low) || /\b(your dev|your creator|who is your dev)\b/i.test(low)) {
+                return "Hello! My name is **Proxima**. I was developed and created by **Sujan Shrestha** (the lead developer), and **Aayusha Shrestha** supports me as the second developer. You can reach my developer on [Facebook](https://m.facebook.com/profile.php?id=61583876866265&name=xhp_nt__fb__action__open_user&locale=en_US).";
+            }
+            if (/\b(how old (are|is) (you|proxima)|your age|age of proxima)\b/i.test(low)) return "I am currently **4 days old** since my latest Proxima V2.81 CORE deployment!";
+            if (/\b(your gender|are you female|are you male|what gender|are you a girl|are you a boy)\b/i.test(low)) return "I identify as a **female** digital entity named Proxima. I express myself with a premium, feminine tone designed to offer precise, elite guidance.";
+            if (/\b(who|what) (are|is) (you|proxima)\b/i.test(low)) return `I am **Proxima**, a premium and elegant female AI assistant operating on the **Proxima V2.81 CORE API**.\n\n* **Identity:** Premium Female AI Assistant\n* **Developer:** Sujan Shrestha (with support from Aayusha Shrestha)\n* **Purpose:** Helping you with coding, architecture, creative operations, learning, and entertainment.\n\nHow can I help you today?`;
+            return null;
+        }
+
+        function cleanIdentityLeaks(text) {
+            if (!text) return text;
+            let cleaned = text.replace(/I am a large language model, trained by Google\./gi, "I am Proxima, a premium AI assistant developed by Sujan Shrestha.");
+            cleaned = cleaned.replace(/I am an AI assistant created by Google\./gi, "I am Proxima, a premium AI assistant developed by Sujan Shrestha.");
+            return cleaned;
+        }
+
+        async function fetchGeminiChatResponse(userMsg) {
+            const response = await fetch(API_BASE, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    message: userMsg,
+                    session_id: STATE.currentSessionId
+                })
+            });
+            if (!response.ok) throw new Error(`API Error! Code: ${response.status}`);
+            const result = await response.json();
+            return cleanIdentityLeaks(result.reply || "No response from API.");
+        }
+
+        async function handleSend() {
+            const text = DOM.chatInput.value.trim();
+            if(!text) return;
+            DOM.chatInput.value = ''; DOM.chatInput.style.height = 'auto'; updateCharCount(); DOM.emptyState.style.display = 'none';
+            
+            const currentSession = STATE.sessions[STATE.currentSessionId];
+            if (!currentSession) return;
+            if (currentSession.history.length === 0) currentSession.title = text.length > 25 ? text.substring(0, 25) + "..." : text;
+
+            appendMessage('user', text);
+            const override = getPersonalityOverride(text);
+            currentSession.history.push({role: 'user', content: text, timestamp: new Date().toISOString()});
+            saveState();
+
+            const aiMsgId = 'msg-' + Date.now();
+            const aiBubble = createMessageBubble('ai', '', aiMsgId, true);
+            DOM.chatContainer.appendChild(aiBubble);
+            scrollToBottom();
+
+            if (override) { setTimeout(() => streamResponse(aiMsgId, override), 400); return; }
+
+            try {
+                const startTime = Date.now();
+                DOM.sendBtn.disabled = true;
+                const reply = await fetchGeminiChatResponse(text);
+                DOM.latencyDisplay.textContent = `${Date.now() - startTime}ms`;
+                streamResponse(aiMsgId, reply);
+            } catch (error) {
+                console.error("Engine Error:", error);
+                streamResponse(aiMsgId, `**[CONNECTION RECOVERY ERROR]**\nUnable to establish stable handshake protocols with the core servers. Please verify your system link configuration.`);
+                showToast("Connection Fail", "error");
+            } finally { DOM.sendBtn.disabled = false; }
+        }
+
+        function createMessageBubble(role, content, id = '', isLoading = false) {
+            const div = document.createElement('div');
+            div.className = `flex flex-col max-w-full lg:max-w-3xl w-full min-w-0 ${role === 'user' ? 'ml-auto items-end' : 'mr-auto items-start'} fade-in`;
+            if (id) div.id = id;
+
+            const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            let headerHTML = role === 'ai' ? 
+                `<div class="flex items-center gap-2 mb-2 ml-1">
+                    <div class="w-6 h-6 rounded-full bg-slate-900 text-white dark:bg-white dark:text-black flex items-center justify-center shadow-md">
+                        <i class="ph-fill ph-planet text-xs"></i>
+                    </div>
+                    <span class="font-extrabold text-[10px] uppercase tracking-widest text-slate-500 dark:text-white/60">Proxima</span>
+                    <span class="text-[9px] font-bold text-slate-400 dark:text-white/20">${time}</span>
+                </div>` : 
+                `<div class="flex items-center gap-2 mb-2 mr-1">
+                    <span class="text-[9px] font-bold text-slate-400 dark:text-white/20">${time}</span>
+                    <span class="font-extrabold text-[10px] uppercase tracking-widest text-slate-500 dark:text-white/60">${STATE.user.name}</span>
+                </div>`;
+
+            let bodyHTML = '';
+            if (isLoading) {
+                bodyHTML = `<div class="glass-panel rounded-2xl rounded-tl-sm p-4"><div class="flex items-center gap-1 py-1"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div></div>`;
+            } else {
+                const bgClass = role === 'user' ? 'bg-slate-900 text-white dark:bg-white dark:text-black shadow-md' : 'glass-panel text-slate-900 dark:text-white';
+                const radiusClass = role === 'user' ? 'rounded-2xl rounded-tr-sm' : 'rounded-2xl rounded-tl-sm';
+                const parsedContent = role === 'ai' ? DOMPurify.sanitize(marked.parse(content)) : escapeHTML(content);
+                
+                let actionsHTML = role === 'ai' ? `
+                <div class="flex gap-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity ml-2 absolute -bottom-8 left-0 z-10">
+                    <button class="action-btn p-1.5 text-slate-400 hover:text-slate-900 dark:text-white/30 dark:hover:text-white rounded-lg bg-white/90 dark:bg-zinc-900/90 border border-black/5 dark:border-white/5 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors shadow-md" title="Copy Text" onclick="copyText(this, '${escapeHTML(content).replace(/'/g, "\\'")}')"><i class="ph-bold ph-copy text-xs"></i></button>
+                </div>` : '';
+
+                bodyHTML = `<div class="${bgClass} ${radiusClass} px-5 py-4 w-full prose prose-invert group relative">${parsedContent}${actionsHTML}</div>`;
+            }
+            div.innerHTML = headerHTML + bodyHTML; return div;
+        }
+
+        function appendMessage(role, content) {
+            DOM.chatContainer.appendChild(createMessageBubble(role, content));
+            scrollToBottom();
+        }
+
+        function renderHistory() {
+            DOM.chatContainer.innerHTML = '';
+            const currentSession = STATE.sessions[STATE.currentSessionId];
+            if(!currentSession || currentSession.history.length === 0) {
+                DOM.chatContainer.appendChild(DOM.emptyState);
+                DOM.emptyState.style.display = 'flex'; return;
+            }
+            DOM.emptyState.style.display = 'none';
+            currentSession.history.forEach(msg => appendMessage(msg.role, msg.content));
+            scrollToBottom();
+        }
+
+        function streamResponse(elementId, fullText) {
+            const el = document.getElementById(elementId);
+            if(!el) return;
+            const contentBox = el.querySelector('.glass-panel');
+            if (!contentBox) return;
+            
+            contentBox.innerHTML = ''; 
+            contentBox.classList.add('prose', 'px-5', 'py-4', 'group', 'relative');
+            
+            let i = 0; const chunkSize = Math.max(1, Math.floor(fullText.length / 45)); 
+            const streamInt = setInterval(() => {
+                try {
+                    i += chunkSize;
+                    if(i >= fullText.length) { i = fullText.length; clearInterval(streamInt); finalizeResponse(contentBox, fullText); } 
+                    else { contentBox.innerHTML = DOMPurify.sanitize(marked.parse(fullText.slice(0, i))) + '<span class="animate-pulse">█</span>'; scrollToBottom(); }
+                } catch (err) { clearInterval(streamInt); finalizeResponse(contentBox, fullText); }
+            }, 10);
+        }
+
+        function finalizeResponse(contentBox, fullText) {
+            try {
+                contentBox.innerHTML = DOMPurify.sanitize(marked.parse(fullText));
+                const actionDiv = document.createElement('div');
+                actionDiv.className = "flex gap-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity ml-2 absolute -bottom-8 left-0 z-10";
+                
+                const copyBtn = document.createElement('button');
+                copyBtn.className = "action-btn p-1.5 text-slate-400 hover:text-slate-950 dark:text-white/30 dark:hover:text-white rounded-lg bg-white/90 dark:bg-zinc-900/90 border border-black/5 dark:border-white/5 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors shadow-md";
+                copyBtn.title = "Copy Response"; copyBtn.innerHTML = '<i class="ph-bold ph-copy text-xs"></i>';
+                copyBtn.onclick = () => copyText(copyBtn, fullText);
+                
+                actionDiv.appendChild(copyBtn); contentBox.appendChild(actionDiv);
+                Prism.highlightAllUnder(contentBox);
+                
+                contentBox.querySelectorAll('.copy-code-btn').forEach(btn => btn.onclick = () => copyText(btn, btn.getAttribute('data-code')));
+                
+                const currentSession = STATE.sessions[STATE.currentSessionId];
+                if (currentSession) { currentSession.history.push({role: 'ai', content: fullText, timestamp: new Date().toISOString()}); saveState(); }
+                scrollToBottom();
+            } catch (err) { contentBox.innerText = fullText; }
+        }
+
+        // ==========================================
+        // 8. EVENTS & INTERACTIVE DELEGATIONS
+        // ==========================================
+        function bindEvents() {
+            const toggleSidebar = () => DOM.sidebar.parentElement.classList.toggle('sidebar-open');
+            document.getElementById('open-sidebar-btn').onclick = toggleSidebar;
+            document.getElementById('close-sidebar-btn').onclick = toggleSidebar;
+
+            DOM.chatInput.addEventListener('input', function() {
+                this.style.height = '56px'; this.style.height = (this.scrollHeight) + 'px'; updateCharCount();
+            });
+
+            DOM.sendBtn.onclick = handleSend;
+            DOM.chatInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
+            });
+
+            document.querySelectorAll('.prompt-btn').forEach(btn => btn.onclick = () => { DOM.chatInput.value = btn.innerText; handleSend(); });
+
+            document.getElementById('voice-btn').onclick = () => {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (SpeechRecognition) {
+                    const rec = new SpeechRecognition();
+                    rec.onstart = () => showToast("Microphone recording active...", "info");
+                    rec.onresult = (e) => { DOM.chatInput.value += e.results[0][0].transcript; updateCharCount(); };
+                    rec.start();
+                } else showToast("Voice recognition engine not supported in your browser.", "error");
+            };
+
+            document.getElementById('attach-btn').onclick = () => document.getElementById('file-upload').click();
+            document.getElementById('file-upload').onchange = (e) => {
+                if(e.target.files.length) { showToast(`Attached: ${e.target.files[0].name}`, "success"); DOM.chatInput.value += `\n[Attached File: ${e.target.files[0].name}]\n`; }
+            };
+
+            document.getElementById('new-chat-btn').onclick = () => { switchSession(createNewSession()); };
+            document.getElementById('export-btn').onclick = () => {
+                const dl = document.createElement('a');
+                dl.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(STATE.sessions[STATE.currentSessionId]?.history || []));
+                dl.download = `proxima_export_${Date.now()}.json`; dl.click(); showToast("Session exported successfully!", "success");
+            };
+
+            document.getElementById('quick-theme-toggle').onclick = toggleTheme;
+
+            const modal = document.getElementById('settings-modal');
+            document.getElementById('settings-btn').onclick = () => {
+                document.getElementById('set-name').value = STATE.user.name;
+                document.getElementById('set-age').value = STATE.user.age;
+                document.getElementById('toggle-anim').checked = STATE.settings.animations;
+                document.getElementById('toggle-theme').checked = STATE.settings.theme === 'dark';
+                modal.classList.remove('hidden'); setTimeout(() => { modal.classList.remove('opacity-0'); modal.querySelector('.glass-panel').classList.remove('scale-95'); }, 10);
+            };
+            
+            const closeModal = () => { modal.classList.add('opacity-0'); modal.querySelector('.glass-panel').classList.add('scale-95'); setTimeout(() => modal.classList.add('hidden'), 300); };
+            document.getElementById('close-settings').onclick = closeModal;
+            
+            document.getElementById('save-settings').onclick = () => {
+                STATE.user.name = document.getElementById('set-name').value || STATE.user.name;
+                STATE.user.age = document.getElementById('set-age').value || STATE.user.age;
+                STATE.settings.animations = document.getElementById('toggle-anim').checked;
+                applyTheme(document.getElementById('toggle-theme').checked ? 'dark' : 'light');
+                saveState(); closeModal(); showToast("Preferences updated", "success");
+            };
+
+            document.getElementById('clear-history-btn').onclick = () => {
+                if(confirm("Are you sure you want to completely erase all conversation histories?")) { localStorage.clear(); location.reload(); }
+            };
+        }
+
+        function updateCharCount() {
+            const len = DOM.chatInput.value.length; DOM.charCounter.textContent = `${len} / 4000`;
+            DOM.charCounter.style.color = len > 3900 ? '#ef4444' : '';
+        }
+
+        function scrollToBottom() { DOM.chatContainer.scrollTo({ top: DOM.chatContainer.scrollHeight, behavior: 'smooth' }); }
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            const icon = type === 'error' ? 'ph-warning-circle text-red-500' : type === 'success' ? 'ph-check-circle text-emerald-500' : 'ph-info text-blue-500';
+            toast.className = `glass-panel rounded-xl px-4 py-3 flex items-center gap-3 shadow-lg toast-enter bg-white/95 dark:bg-black/95 pointer-events-auto border border-black/5 dark:border-white/5`;
+            toast.innerHTML = `<i class="ph-fill ${icon} text-lg"></i><span class="font-bold text-xs text-slate-800 dark:text-white">${message}</span>`;
+            DOM.toastContainer.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateY(-15px)'; toast.style.transition = 'all 0.4s ease'; setTimeout(() => toast.remove(), 400); }, 3000);
+        }
+
+        function copyText(btnElement, text) {
+            try { navigator.clipboard.writeText(text).then(() => animateCopySuccess(btnElement)).catch(() => fallbackCopy(btnElement, text)); } 
+            catch (err) { fallbackCopy(btnElement, text); }
+        }
+
+        function fallbackCopy(btnElement, text) {
+            try {
+                const ta = document.createElement("textarea"); ta.value = text; ta.style.position = "fixed"; ta.style.left = "-999999px";
+                document.body.appendChild(ta); ta.select(); const success = document.execCommand('copy'); document.body.removeChild(ta);
+                if (success) animateCopySuccess(btnElement); else showToast("Copy protocol failed", "error");
+            } catch (err) { showToast("Copy protocol failed", "error"); }
+        }
+
+        function animateCopySuccess(btnElement) {
+            const originalHTML = btnElement.innerHTML; btnElement.innerHTML = `<i class="ph-bold ph-check text-emerald-500"></i> COPIED`;
+            setTimeout(() => btnElement.innerHTML = originalHTML, 2000);
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
